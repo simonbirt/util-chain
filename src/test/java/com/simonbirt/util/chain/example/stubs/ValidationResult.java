@@ -1,4 +1,4 @@
-package com.simonbirt.util.chain.example;
+package com.simonbirt.util.chain.example.stubs;
 
 public class ValidationResult {
 

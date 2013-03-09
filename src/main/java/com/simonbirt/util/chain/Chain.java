@@ -19,18 +19,18 @@ public class Chain<IN, RESPONSE> {
 			throw new UnterminatedChainException();
 		}
 		Step<IN, ?, RESPONSE> first = links.get(0);
-		return first.process(input, tail());
+		return first.process(input,tail());
 	}
 
 	private Chain tail() {
-		return new Chain<IN, RESPONSE>(links.subList(1, links.size()));
+		return new Chain(links.subList(1, links.size()));
 	}
 
-	public static <IN, OUT, RESPONSE> ChainBuilder<IN, OUT, RESPONSE> first(Step<IN, OUT, RESPONSE> link) {
+	public static <IN, OUT, RESPONSE> ChainBuilder<IN, OUT, RESPONSE> chainFor(Step<IN, OUT, RESPONSE> link) {
 		return new ChainBuilder<IN, OUT, RESPONSE>(link);
 	}
 	
-	public static <IN, RESPONSE> ChainBuilder<IN, IN, RESPONSE> forTypes(Class<IN> inType, Class<RESPONSE> rType){
+	public static <IN, RESPONSE> ChainBuilder<IN, IN, RESPONSE> chainFor(Class<IN> inType, Class<RESPONSE> rType){
 		return new ChainBuilder<IN, IN, RESPONSE>();
 	}
 
@@ -46,15 +46,16 @@ public class Chain<IN, RESPONSE> {
 			links.add(link);
 		}
 
-		public <NEWOUT> ChainBuilder<IN, NEWOUT, RESPONSE> then(Step<OUT, NEWOUT, RESPONSE> link) {
+		public <NEWOUT> ChainBuilder<IN, NEWOUT, RESPONSE> append(Step<OUT, NEWOUT, RESPONSE> link) {
 			links.add(link);
 			return (ChainBuilder<IN, NEWOUT, RESPONSE>) this;
 		}
 		
-		public <T> ChainBuilder<IN, OUT, RESPONSE> then(PassthroughStep<T,RESPONSE> link) {
+		public ChainBuilder<IN, OUT, RESPONSE> append(IdentityStep<OUT,RESPONSE> link) {
 			links.add(link);
 			return (ChainBuilder<IN, OUT, RESPONSE>) this;
 		}
+		
 
 		public Chain<IN, RESPONSE> build() {
 			return new Chain<IN, RESPONSE>(links);
