@@ -1,8 +1,8 @@
 package com.simonbirt.util.chain.example.stubs;
 
-public class TradePermissionError {
+public class BookValidationError {
 
-	public TradePermissionError(String message) {
+	public BookValidationError(String message) {
 		// TODO Auto-generated constructor stub
 	}
 

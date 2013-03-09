@@ -1,7 +1,7 @@
 package com.simonbirt.util.chain.example.stubs;
 
-public class UISessionSource {
-	public UISession getSession(){
+public class SessionProvider {
+	public Session getSession(){
 		return null;
 	}
 }

@@ -1,5 +1,5 @@
 package com.simonbirt.util.chain;
-import static com.simonbirt.util.chain.Chain.chainFor;
+import static com.simonbirt.util.chain.Chain.chainOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -10,7 +10,7 @@ public class ChainTest {
 	@Test
 	public void canProcessOneStepChain() {
 		Input input = new Input("Test");
-		Response output = chainFor(returnResponse(Input.class)).build()
+		Response output = chainOf(returnResponse(Input.class)).build()
 				.process(input);
 		assertThat(output.getString(), is("InputTest"));
 	}
@@ -18,14 +18,14 @@ public class ChainTest {
 	@Test
 	public void canProcessTwoStepChainWithInitialPassthrough() {
 		Input input = new Input("Test");
-		Response output = chainFor(Input.class, Response.class).append(passThrough()).append(returnResponse()).build().process(input);
+		Response output = chainOf(Input.class, Response.class).append(passThrough()).append(returnResponse()).build().process(input);
 		assertThat(output.getString(), is("InputTest"));
 	}
 
 	@Test
 	public void canProcessTwoStepChain() {
 		Input input = new Input("Test");
-		Response output = chainFor(continueProcessing())
+		Response output = chainOf(continueProcessing())
 				.append(returnResponse(Input.class)).build().process(input);
 		assertThat(output.getString(), is("InputTest"));
 	}
@@ -33,13 +33,13 @@ public class ChainTest {
 	@Test(expected = UnterminatedChainException.class)
 	public void throwsOnUnterminatedChain() {
 		Input input = new Input("Test");
-		chainFor(continueProcessing()).build().process(input);
+		chainOf(continueProcessing()).build().process(input);
 	}
 
 	@Test
 	public void canProcessConvertingChain() {
 		Input input = new Input("Test");
-		Response output = chainFor(continueProcessing()).append(convert())
+		Response output = chainOf(continueProcessing()).append(convert())
 				.append(returnResponse(Converted.class)).build().process(input);
 		assertThat(output.getString(), is("ConvertedTest"));
 	}

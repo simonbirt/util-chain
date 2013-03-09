@@ -3,6 +3,7 @@ package com.simonbirt.util.chain;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings({"rawtypes","unchecked"})
 public class Chain<IN, RESPONSE> {
 	private final List<Step> links;
 
@@ -26,11 +27,11 @@ public class Chain<IN, RESPONSE> {
 		return new Chain(links.subList(1, links.size()));
 	}
 
-	public static <IN, OUT, RESPONSE> ChainBuilder<IN, OUT, RESPONSE> chainFor(Step<IN, OUT, RESPONSE> link) {
+	public static <IN, OUT, RESPONSE> ChainBuilder<IN, OUT, RESPONSE> chainOf(Step<IN, OUT, RESPONSE> link) {
 		return new ChainBuilder<IN, OUT, RESPONSE>(link);
 	}
 	
-	public static <IN, RESPONSE> ChainBuilder<IN, IN, RESPONSE> chainFor(Class<IN> inType, Class<RESPONSE> rType){
+	public static <IN, RESPONSE> ChainBuilder<IN, IN, RESPONSE> chainOf(Class<IN> inType, Class<RESPONSE> rType){
 		return new ChainBuilder<IN, IN, RESPONSE>();
 	}
 

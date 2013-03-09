@@ -1,96 +1,95 @@
 package com.simonbirt.util.chain.example;
 
-import static com.simonbirt.util.chain.Chain.chainFor;
+import static com.simonbirt.util.chain.Chain.chainOf;
 
 import com.simonbirt.util.chain.Chain;
 import com.simonbirt.util.chain.IdentityStep;
 import com.simonbirt.util.chain.Step;
+import com.simonbirt.util.chain.example.stubs.Book;
+import com.simonbirt.util.chain.example.stubs.BookDao;
+import com.simonbirt.util.chain.example.stubs.BookPermissionError;
+import com.simonbirt.util.chain.example.stubs.BookResponse;
+import com.simonbirt.util.chain.example.stubs.BookValidationError;
 import com.simonbirt.util.chain.example.stubs.Permission;
 import com.simonbirt.util.chain.example.stubs.PermissionService;
-import com.simonbirt.util.chain.example.stubs.Trade;
-import com.simonbirt.util.chain.example.stubs.TradeDao;
-import com.simonbirt.util.chain.example.stubs.TradePermissionError;
-import com.simonbirt.util.chain.example.stubs.TradeResponse;
-import com.simonbirt.util.chain.example.stubs.TradeValidationError;
-import com.simonbirt.util.chain.example.stubs.UISessionSource;
+import com.simonbirt.util.chain.example.stubs.SessionProvider;
 import com.simonbirt.util.chain.example.stubs.User;
 import com.simonbirt.util.chain.example.stubs.ValidationResult;
 import com.simonbirt.util.chain.example.stubs.Validator;
 
 public class ServiceExample {
 
-	private Validator<Trade> validator;
-	private UISessionSource sessions;
-	protected TradeDao dao;
+	private Validator<Book> validator;
+	private SessionProvider sessions;
+	protected BookDao dao;
 	private PermissionService permissionService;
 
 
-	public TradeResponse saveTrade(Trade trade) {
-		return chainFor(validate())
-				.append(this.<Trade>checkPermissions(Permission.WRITE))
-				.append(saveTrade())
+	public BookResponse saveBook(Book book) {
+		return chainOf(validate())
+				.append(this.<Book>checkPermissions(Permission.WRITE))
+				.append(saveBook())
 				.append(returnResponse())
-				.build().process(trade);
+				.build().process(book);
 	}
 
-	public TradeResponse getTradeById(Long tradeId) {
-		return chainFor(Long.class, TradeResponse.class)
-				.append(this.<Long>checkPermissions(Permission.READ))
-				.append(lookupTrade())
+	public BookResponse getBookById(Long bookId) {
+		return chainOf(this.<Long>checkPermissions(Permission.READ))
+				.append(lookupBook())
 				.append(returnResponse())
-				.build().process(tradeId);
+				.build().process(bookId);
 	}
 
-	private IdentityStep<Trade, TradeResponse> returnResponse() {
-		return new IdentityStep<Trade, TradeResponse>() {
+	private IdentityStep<Book, BookResponse> returnResponse() {
+		return new IdentityStep<Book, BookResponse>() {
 			@Override
-			public TradeResponse process(Trade input,Chain<Trade, TradeResponse> controller) {
-				return new TradeResponse(input);
+			public BookResponse process(Book input,Chain<Book, BookResponse> controller) {
+				return new BookResponse(input);
 			}
 		};
 	}
 
-	private Step<Trade,Trade,TradeResponse> saveTrade() {
-		return new Step<Trade,Trade,TradeResponse>() {
+	private Step<Book,Book,BookResponse> saveBook() {
+		return new Step<Book,Book,BookResponse>() {
 			@Override
-			public TradeResponse process(Trade input, Chain<Trade, TradeResponse> controller) {
-				return controller.process(dao.saveTrade(input));
+			public BookResponse process(Book input, Chain<Book, BookResponse> controller) {
+				return controller.process(dao.saveBook(input));
 			}
 		};
 	}
 
-	private Step<Long, Trade, TradeResponse> lookupTrade() {
-		return new Step<Long, Trade, TradeResponse>() {
+	private Step<Long, Book, BookResponse> lookupBook() {
+		return new Step<Long, Book, BookResponse>() {
 			@Override
-			public TradeResponse process(Long id, Chain<Trade, TradeResponse> controller) {
-				return controller.process(dao.getTradeById(id));
+			public BookResponse process(Long id, Chain<Book, BookResponse> controller) {
+				return controller.process(dao.getBookById(id));
 			}
 		};
 	}
 
-	private IdentityStep<Trade, TradeResponse> validate() {
-		return new IdentityStep<Trade, TradeResponse>() {
+	private IdentityStep<Book, BookResponse> validate() {
+		return new IdentityStep<Book, BookResponse>() {
 			@Override
-			public TradeResponse process(Trade input,
-					Chain<Trade, TradeResponse> controller) {
+			public BookResponse process(Book input,
+					Chain<Book, BookResponse> controller) {
 				ValidationResult v = validator.validate(input);
 				if (!v.isValid()) {
-					return new TradeResponse(new TradeValidationError(v.getMessage()));
+					return new BookResponse(new BookValidationError(v.getMessage()));
 				}
 				return controller.process(input);
 			}
 		};
 	}
 
-	private <T> Step<T,T,TradeResponse> checkPermissions(final Permission... permissions) {
-		return new Step<T,T,TradeResponse>() {
+	private <T> Step<T,T,BookResponse> checkPermissions(final Permission... permissions) {
+		return new Step<T,T,BookResponse>() {
 			@Override
-			public TradeResponse process(T input, Chain<T, TradeResponse> controller) {
+			public BookResponse process(T input, Chain<T, BookResponse> controller) {
 				User user = sessions.getSession().getUser();
 				for (Permission permission : permissions) {
 					if (!permissionService.isAllowed(user, permission)) {
-						return new TradeResponse(
-								new TradePermissionError(permission.getFailureMessage()));
+						return new BookResponse(
+								new BookPermissionError(permission.getFailureMessage()));
 					}
 				}
 				return controller.process(input);
