@@ -81,8 +81,8 @@ public class ServiceExample {
 		};
 	}
 
-	private <T> Step<T,T,BookResponse> checkPermissions(final Permission... permissions) {
-		return new Step<T,T,BookResponse>() {
+	private <T> IdentityStep<T,BookResponse> checkPermissions(final Permission... permissions) {
+		return new IdentityStep<T,BookResponse>() {
 			@Override
 			public BookResponse process(T input, Chain<T, BookResponse> controller) {
 				User user = sessions.getSession().getUser();

@@ -47,15 +47,16 @@ public class Chain<IN, RESPONSE> {
 			links.add(link);
 		}
 
+		public ChainBuilder<IN, OUT, RESPONSE> append(IdentityStep<OUT,RESPONSE> link) {
+			links.add(link);
+			return (ChainBuilder<IN, OUT, RESPONSE>) this;
+		}
+
 		public <NEWOUT> ChainBuilder<IN, NEWOUT, RESPONSE> append(Step<OUT, NEWOUT, RESPONSE> link) {
 			links.add(link);
 			return (ChainBuilder<IN, NEWOUT, RESPONSE>) this;
 		}
 		
-		public ChainBuilder<IN, OUT, RESPONSE> append(IdentityStep<OUT,RESPONSE> link) {
-			links.add(link);
-			return (ChainBuilder<IN, OUT, RESPONSE>) this;
-		}
 		
 
 		public Chain<IN, RESPONSE> build() {
